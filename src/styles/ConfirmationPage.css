@@ -1,0 +1,113 @@
+.confirmation-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f4f6;
+  padding: 1rem;
+}
+
+.confirmation-ticket {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+}
+
+.ticket-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.ticket-header h1 {
+  color: #16a34a;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.payment-message {
+  font-size: 1.1rem;
+  color: #374151;
+}
+
+.total-paid {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.date {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.ticket-items {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+.ticket-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ticket-item:last-child {
+  border-bottom: none;
+}
+
+.ticket-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+}
+
+.ticket-item-details {
+  flex: 1;
+}
+
+.item-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.item-quantity {
+  color: #6b7280;
+}
+
+.item-subtotal {
+  font-weight: bold;
+  color: #111827;
+}
+
+.ticket-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.back-button {
+  display: inline-block;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: #2563eb;
+}
+
+.thanks-message {
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}

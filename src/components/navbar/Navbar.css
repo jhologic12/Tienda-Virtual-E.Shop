@@ -1,0 +1,77 @@
+/* Navbar.css */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #2596be; 
+  color: #333; 
+  padding: 0.75rem 1.5rem;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem; /* Espacio entre enlaces */
+  align-items: center;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+  color: #93c5fd; /* Azul más claro al hover */
+}
+
+.navbar-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-cart-count {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.75rem;
+  background-color: #ef4444; /* Rojo */
+  color: white;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.navbar-logout {
+  background-color: #ff4641;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.navbar-logout:hover {
+  background-color: #1e40af;
+}
+
+.logo-image {
+  height: 60px; /* Ajusta el tamaño según prefieras */
+  width: auto;
+}
