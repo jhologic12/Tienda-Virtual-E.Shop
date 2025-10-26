@@ -10,12 +10,13 @@ const RegisterPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const BACKEND_URL = import.meta.env.VITE_API_URL;
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await axios.post("http://127.0.0.1:8000/auth/register", {
+      await axios.post(`${BACKEND_URL}/auth/register`, {
         email,
         full_name: fullName,
         password,

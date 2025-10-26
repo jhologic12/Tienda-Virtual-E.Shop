@@ -32,13 +32,13 @@ const Home: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = async (uuid: string) => {
-    try {
-      await addToCart({ product_uuid: uuid, quantity: 1 });
-      alert("Producto agregado al carrito");
-    } catch {
-      alert("No se pudo agregar el producto al carrito");
-    }
+  const handleAddToCart = async (product_id: string) => {
+  try {
+    await addToCart({ product_id, quantity: 1 });
+    alert("Producto agregado al carrito");
+  } catch {
+    alert("No se pudo agregar el producto al carrito");
+  }
   };
 
   const filteredProducts = products.filter((product) =>
@@ -71,7 +71,7 @@ const Home: React.FC = () => {
             <div key={product.uuid} className="product-card">
               <div className="image-container">
                 <img
-                  src={backendImage(product.image_small)}
+                  src={backendImage(product.image_thumbnail)}
                   alt={product.name}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "/placeholder.png";

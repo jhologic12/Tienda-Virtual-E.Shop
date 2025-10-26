@@ -1,6 +1,7 @@
 // src/context/AuthContext.tsx
 import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
 import axios from "axios";
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 interface DecodedUser {
   sub: string;
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post<LoginResponse>(
-        "http://localhost:8000/auth/login",
+        `${BACKEND_URL}/auth/login`,
         { email, password }
       );
 

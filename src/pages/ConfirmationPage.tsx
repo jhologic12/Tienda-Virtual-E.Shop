@@ -2,7 +2,7 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import "../styles/ConfirmationPage.css";
-
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 interface PurchasedItem {
   product_id: string;
   product_name: string;
@@ -19,7 +19,7 @@ interface OrderData {
 }
 
 // Cambia esta URL según tu servidor
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = BACKEND_URL;
 
 const ConfirmationPage: React.FC = () => {
   const location = useLocation();

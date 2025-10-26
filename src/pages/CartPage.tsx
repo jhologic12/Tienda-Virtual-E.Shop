@@ -3,8 +3,8 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import "../styles/CartPage.css";
 import { CartItem } from "../types";
-
-const BACKEND_URL = "http://localhost:8000"; // <-- host del backend
+const BACKEND_URL = import.meta.env.VITE_API_URL;
+// <-- host del backend
 
 const CartPage: React.FC = () => {
   const { cart, total, updateCartItem, removeFromCart, clearCart } = useCart();

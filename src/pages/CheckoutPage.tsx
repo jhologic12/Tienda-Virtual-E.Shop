@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate , Link } from "react-router-dom";
 import api from "../api/api";
 import "../styles/CheckoutPage.css";
-
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 interface CardData {
   card_number: string;
   holder_name: string;
@@ -14,7 +14,7 @@ interface CardData {
 }
 
 // Cambia esta URL según tu servidor
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = BACKEND_URL;
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart, total } = useCart();
