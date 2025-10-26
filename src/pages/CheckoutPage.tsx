@@ -84,7 +84,7 @@ const CheckoutPage: React.FC = () => {
         {cart.map((item: CartItem) => (
           <div key={item.product_id} className="cart-item">
             <img
-              src={item.image_url ? `${BASE_URL}${item.image_url}` : "/placeholder.png"}
+              src={item.image_url || "/placeholder.png"}
               alt={item.name}
               className="product-image"
               onError={(e) => ((e.target as HTMLImageElement).src = "/placeholder.png")}

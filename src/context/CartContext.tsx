@@ -18,7 +18,7 @@ export interface CartItem {
 
 // Actualizamos este tipo para que reciba product_id directamente
 interface AddToCartPayload {
-  product_id: string;
+  product_id: string; // 👈 Cambiado
   quantity: number;
 }
 
@@ -83,27 +83,32 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ✅ AHORA addToCart usa directamente product_id
   const addToCart = async (item: AddToCartPayload) => {
-    if (!token) throw new Error("Usuario no autenticado");
-    try {
-      await api.post(
-        "/cart/add",
-        item, // 👈 Ya enviamos { product_id, quantity }
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await fetchCart();
-    } catch (error: any) {
-      if (error.response?.status === 401) handleUnauthorized();
-      else console.error("Error agregando al carrito:", error.response?.data);
-      throw error;
-    }
-  };
+ 
+
+  if (!token) throw new Error("Usuario no autenticado");
+  try {
+    await api.post(
+      "/cart/add",
+      {
+        product_id: item.product_id, // 👈 Aseguramos que se envía bien
+        quantity: item.quantity,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    await fetchCart();
+  } catch (error: any) {
+    if (error.response?.status === 401) handleUnauthorized();
+    else console.error("Error agregando al carrito:", error.response?.data);
+    throw error;
+  }
+};
 
   const updateCartItem = async (product_id: string, quantity: number) => {
     if (!token) throw new Error("Usuario no autenticado");

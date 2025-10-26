@@ -32,13 +32,13 @@ const Home: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = async (product_id: string) => {
-  try {
-    await addToCart({ product_id, quantity: 1 });
-    alert("Producto agregado al carrito");
-  } catch {
-    alert("No se pudo agregar el producto al carrito");
-  }
+  const handleAddToCart = async (id: string) => {
+    try {
+      await addToCart({ product_id: id, quantity: 1 });
+      alert("Producto agregado al carrito");
+    } catch {
+      alert("No se pudo agregar el producto al carrito");
+    }
   };
 
   const filteredProducts = products.filter((product) =>
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
           <p>No se encontraron productos con ese nombre.</p>
         ) : (
           filteredProducts.map((product) => (
-            <div key={product.uuid} className="product-card">
+            <div key={product.id} className="product-card">
               <div className="image-container">
                 <img
                   src={backendImage(product.image_thumbnail)}
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
                 <p>{product.description}</p>
                 <p>Precio: ${product.price.toLocaleString()}</p>
                 <p>Stock: {product.stock}</p>
-                <button className="add-cart-btn" onClick={() => handleAddToCart(product.uuid)}>
+                <button className="add-cart-btn" onClick={() => handleAddToCart(product.id)}>
                   Agregar al carrito
                 </button>
               </div>
