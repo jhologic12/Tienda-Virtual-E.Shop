@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CheckoutPage.css";
 
-const BACKEND_URL = import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_URL;
+const BACKEND_URL =
+  import.meta.env.MODE === "development"
+    ? "" // local: usar proxy
+    : import.meta.env.VITE_API_URL; // producción
 
 interface CardData {
   number: string;
@@ -29,26 +32,40 @@ const CheckoutPage: React.FC = () => {
   const handleConfirmPurchase = async () => {
     setLoading(true);
     setError("");
+
     try {
+      // Obtén el token JWT desde localStorage (o donde lo guardes al hacer login)
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        setError("Usuario no autenticado");
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(`${BACKEND_URL}/checkout/payment`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // ✅ envío del JWT
+        },
         body: JSON.stringify({
           card_number: cardData.number,
           holder_name: cardData.name,
           expiration_date: cardData.expiry,
           cvv: cardData.cvv,
         }),
-        credentials: "include", // ⚠️ envío de cookies
       });
 
-      if (!response.ok) throw new Error("Error procesando el pago");
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.detail || "Error procesando el pago");
+      }
 
       const data = await response.json();
       navigate("/confirmation", { state: data });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError("Error procesando el pago");
+      setError(err.message || "Error procesando el pago");
     } finally {
       setLoading(false);
     }
@@ -59,7 +76,12 @@ const CheckoutPage: React.FC = () => {
       <h2>Pago</h2>
       <div className="payment-form">
         <h3>Datos de la tarjeta</h3>
-        <form onSubmit={(e) => { e.preventDefault(); handleConfirmPurchase(); }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConfirmPurchase();
+          }}
+        >
           <input
             type="text"
             name="number"
