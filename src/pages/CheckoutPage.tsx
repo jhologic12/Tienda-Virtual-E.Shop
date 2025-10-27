@@ -2,19 +2,16 @@
 import React, { useState } from "react";
 import { useCart, CartItem } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate , Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/api";
 import "../styles/CheckoutPage.css";
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+
 interface CardData {
   card_number: string;
   holder_name: string;
   expiration_date: string;
   cvv: string;
 }
-
-// Cambia esta URL según tu servidor
-const BASE_URL = BACKEND_URL;
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart, total } = useCart();
@@ -44,11 +41,8 @@ const CheckoutPage: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const orderData = response.data;
-
       await clearCart();
-
-      navigate("/confirmation", { state: orderData });
+      navigate("/confirmation", { state: response.data });
     } catch (err: any) {
       alert(`Error procesando pago: ${err.response?.data?.detail || err.message}`);
     } finally {
@@ -68,7 +62,7 @@ const CheckoutPage: React.FC = () => {
     <div className="checkout-container">
       <h2 className="checkout-title">Checkout</h2>
 
-       {/* Botón regresar al carrito */}
+      {/* Botón regresar al carrito */}
       <div className="back-to-cart">
         <Link
           to="/carrito"
@@ -95,7 +89,9 @@ const CheckoutPage: React.FC = () => {
                 {item.quantity} x ${item.price.toLocaleString()}
               </p>
             </div>
-            <div className="cart-item-subtotal">${item.subtotal.toLocaleString()}</div>
+            <div className="cart-item-subtotal">
+              ${(item.price * item.quantity).toLocaleString()}
+            </div>
           </div>
         ))}
         <div className="cart-total">Total: ${total.toLocaleString()}</div>
@@ -143,11 +139,7 @@ const CheckoutPage: React.FC = () => {
               className="input-field"
             />
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="pay-button"
-          >
+          <button type="submit" disabled={loading} className="pay-button">
             {loading ? "Procesando..." : `Pagar $${total.toLocaleString()}`}
           </button>
         </form>

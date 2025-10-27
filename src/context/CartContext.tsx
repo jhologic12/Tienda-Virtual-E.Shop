@@ -4,21 +4,17 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/api";
 import { useAuth } from "./AuthContext";
 
-// -----------------------------
-// Tipos
-// -----------------------------
 export interface CartItem {
   product_id: string;
   name: string;
   price: number;
   quantity: number;
-  subtotal: number;
+  subtotal?: number;
   image_url?: string;
 }
 
-// Actualizamos este tipo para que reciba product_id directamente
 interface AddToCartPayload {
-  product_id: string; // 👈 Cambiado
+  product_id: string;
   quantity: number;
 }
 
@@ -32,14 +28,8 @@ interface CartContextType {
   fetchCart: () => Promise<void>;
 }
 
-// -----------------------------
-// Contexto
-// -----------------------------
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// -----------------------------
-// Provider
-// -----------------------------
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { token, logout } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -59,6 +49,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout?.();
   };
 
+  const calculateTotal = (items: CartItem[]) =>
+    items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const normalizeImage = (url?: string, product_id?: string) => {
+    if (url && url.startsWith("http")) return url;
+    return "/placeholder.png";
+  };
+
   const fetchCart = async () => {
     if (!token) throw new Error("Usuario no autenticado");
     try {
@@ -66,17 +64,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setCart(
-        response.data.map(item => ({
-          ...item,
-          image_url: item.image_url || `/static/products/${item.product_id}_small.webp`
-        }))
-      );
+      const updatedItems = response.data.map(item => ({
+        ...item,
+        subtotal: item.price * item.quantity,
+        image_url: normalizeImage(item.image_url, item.product_id),
+      }));
 
-      const totalResponse = await api.get<{ total: number }>("/cart/total", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTotal(totalResponse.data.total);
+      setCart(updatedItems);
+      setTotal(calculateTotal(updatedItems));
     } catch (error: any) {
       if (error.response?.status === 401) handleUnauthorized();
       else console.error("Error obteniendo carrito:", error.response?.data);
@@ -84,31 +79,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addToCart = async (item: AddToCartPayload) => {
- 
-
-  if (!token) throw new Error("Usuario no autenticado");
-  try {
-    await api.post(
-      "/cart/add",
-      {
-        product_id: item.product_id, // 👈 Aseguramos que se envía bien
-        quantity: item.quantity,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    await fetchCart();
-  } catch (error: any) {
-    if (error.response?.status === 401) handleUnauthorized();
-    else console.error("Error agregando al carrito:", error.response?.data);
-    throw error;
-  }
-};
+    if (!token) throw new Error("Usuario no autenticado");
+    try {
+      await api.post(
+        "/cart/add",
+        { product_id: item.product_id, quantity: item.quantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      await fetchCart();
+    } catch (error: any) {
+      if (error.response?.status === 401) handleUnauthorized();
+      else console.error("Error agregando al carrito:", error.response?.data);
+      throw error;
+    }
+  };
 
   const updateCartItem = async (product_id: string, quantity: number) => {
     if (!token) throw new Error("Usuario no autenticado");
@@ -128,7 +112,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const removeFromCart = async (product_id: string) => {
     if (!token) throw new Error("Usuario no autenticado");
     try {
-      await api.delete(`/cart/remove/${product_id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await api.delete(`/cart/remove/${product_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       await fetchCart();
     } catch (error: any) {
       if (error.response?.status === 401) handleUnauthorized();
