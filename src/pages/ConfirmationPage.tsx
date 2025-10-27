@@ -45,7 +45,7 @@ const ConfirmationPage: React.FC = () => {
           {orderData.items.map((item) => (
             <div key={item.product_id} className="confirmation-item">
               <img
-                src={item.image_url ? `${BACKEND_URL}${item.image_url}` : "/placeholder.png"}
+                src={item.image_url || "/placeholder.png"}
                 alt={item.product_name}
                 className="confirmation-product-image"
                 onError={(e) => ((e.target as HTMLImageElement).src = "/placeholder.png")}

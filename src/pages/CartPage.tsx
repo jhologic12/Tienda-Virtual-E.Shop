@@ -34,7 +34,7 @@ const CartPage: React.FC = () => {
         {cart.map((item: CartItem) => (
           <div key={item.product_id} className="cart-card">
             <img
-              src={item.image_url ? `${BACKEND_URL}${item.image_url}` : "/placeholder.png"}
+              src={item.image_url || "/placeholder.png"}
               alt={item.name}
               className="cart-image"
               onError={(e) => {
