@@ -35,7 +35,7 @@ const CheckoutPage: React.FC = () => {
 
     try {
       // Obtén el token JWT desde localStorage (o donde lo guardes al hacer login)
-      const token = localStorage.getItem("jwt_token");
+      const token = localStorage.getItem("authToken");
       if (!token) {
         setError("Usuario no autenticado");
         setLoading(false);
