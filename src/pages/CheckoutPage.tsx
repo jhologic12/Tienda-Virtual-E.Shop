@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CheckoutPage.css";
-
+import { useCart } from "../context/CartContext"; // <-- asegúrate de importar
 const BACKEND_URL =
   import.meta.env.MODE === "development"
     ? "" // local: usar proxy
@@ -16,6 +16,7 @@ interface CardData {
 
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
+  const { clearCart } = useCart();
   const [cardData, setCardData] = useState<CardData>({
     number: "",
     name: "",
@@ -62,6 +63,8 @@ const CheckoutPage: React.FC = () => {
       }
 
       const data = await response.json();
+      // 🔹 Aquí vacías el carrito en el frontend
+      clearCart();
       navigate("/confirmation", { state: data });
     } catch (err: any) {
       console.error(err);
