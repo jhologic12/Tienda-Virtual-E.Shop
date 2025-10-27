@@ -1,8 +1,10 @@
-// src/pages/ConfirmationPage.tsx
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import "../styles/ConfirmationPage.css";
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+
+// URL dinámica según entorno
+const BACKEND_URL = import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_URL;
+
 interface PurchasedItem {
   product_id: string;
   product_name: string;
@@ -13,14 +15,10 @@ interface PurchasedItem {
 }
 
 interface OrderData {
-  
   message: string;
   total: number;
   items: PurchasedItem[];
 }
-
-// Cambia esta URL según tu servidor
-const BASE_URL = BACKEND_URL;
 
 const ConfirmationPage: React.FC = () => {
   const location = useLocation();
@@ -47,7 +45,7 @@ const ConfirmationPage: React.FC = () => {
           {orderData.items.map((item) => (
             <div key={item.product_id} className="confirmation-item">
               <img
-                src={item.image_url || "/placeholder.png"}
+                src={item.image_url ? `${BACKEND_URL}${item.image_url}` : "/placeholder.png"}
                 alt={item.product_name}
                 className="confirmation-product-image"
                 onError={(e) => ((e.target as HTMLImageElement).src = "/placeholder.png")}

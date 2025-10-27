@@ -1,9 +1,10 @@
 import React from "react";
-import { useCart, CartItem } from "../context/CartContext"; // <-- usar CartItem del contexto
+import { useCart, CartItem } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import "../styles/CartPage.css";
 
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+// BACKEND_URL dinámico según entorno
+const BACKEND_URL = import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_URL;
 
 const CartPage: React.FC = () => {
   const { cart, total, updateCartItem, removeFromCart, clearCart } = useCart();
@@ -33,7 +34,7 @@ const CartPage: React.FC = () => {
         {cart.map((item: CartItem) => (
           <div key={item.product_id} className="cart-card">
             <img
-              src={item.image_url || "/placeholder.png"}
+              src={item.image_url ? `${BACKEND_URL}${item.image_url}` : "/placeholder.png"}
               alt={item.name}
               className="cart-image"
               onError={(e) => {
@@ -45,28 +46,13 @@ const CartPage: React.FC = () => {
               <p>Precio: ${item.price.toLocaleString()}</p>
               <p>Subtotal: ${item.subtotal?.toLocaleString()}</p>
               <div className="quantity-control">
-                <button
-                  onClick={() =>
-                    handleQuantityChange(item.product_id, item.quantity - 1)
-                  }
-                >
-                  -
-                </button>
+                <button onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}>-</button>
                 <span>{item.quantity}</span>
-                <button
-                  onClick={() =>
-                    handleQuantityChange(item.product_id, item.quantity + 1)
-                  }
-                >
-                  +
-                </button>
+                <button onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}>+</button>
               </div>
             </div>
             <div className="cart-actions">
-              <button
-                className="remove-btn"
-                onClick={() => removeFromCart(item.product_id)}
-              >
+              <button className="remove-btn" onClick={() => removeFromCart(item.product_id)}>
                 Eliminar
               </button>
             </div>
@@ -77,14 +63,8 @@ const CartPage: React.FC = () => {
       <div className="cart-footer">
         <h3>Total: ${total.toLocaleString()}</h3>
         <div className="footer-buttons">
-          <button className="clear-cart-btn" onClick={clearCart}>
-            Vaciar carrito
-          </button>
-          <button
-            className="checkout-btn"
-            onClick={handleCheckout}
-            disabled={cart.length === 0}
-          >
+          <button className="clear-cart-btn" onClick={clearCart}>Vaciar carrito</button>
+          <button className="checkout-btn" onClick={handleCheckout} disabled={cart.length === 0}>
             Pagar ahora
           </button>
         </div>

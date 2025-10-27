@@ -1,40 +1,34 @@
-// src/pages/CheckoutPage.tsx
 import React, { useState } from "react";
-import { useCart, CartItem } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import "../styles/CheckoutPage.css";
 
-const BACKEND_URL =
-  import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_URL;
+const BACKEND_URL = import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_URL;
+
+interface CardData {
+  number: string;
+  name: string;
+  expiry: string;
+  cvv: string;
+}
 
 const CheckoutPage: React.FC = () => {
-  const { cart, total, clearCart } = useCart();
   const navigate = useNavigate();
-
-  const [cardData, setCardData] = useState({
-    name: "",
+  const [cardData, setCardData] = useState<CardData>({
     number: "",
+    name: "",
     expiry: "",
     cvv: "",
   });
-
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCardData((prev) => ({ ...prev, [name]: value }));
+    setCardData({ ...cardData, [e.target.name]: e.target.value });
   };
 
   const handleConfirmPurchase = async () => {
-    if (!cardData.name || !cardData.number || !cardData.expiry || !cardData.cvv) {
-      setError("Por favor completa todos los campos de la tarjeta.");
-      return;
-    }
-
     setLoading(true);
     setError("");
-
     try {
       const response = await fetch(`${BACKEND_URL}/checkout/payment`, {
         method: "POST",
@@ -45,97 +39,64 @@ const CheckoutPage: React.FC = () => {
           expiration_date: cardData.expiry,
           cvv: cardData.cvv,
         }),
-        credentials: "include", // envía la cookie de sesión
+        credentials: "include", // ⚠️ envío de cookies
       });
 
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Error procesando el pago");
-      }
+      if (!response.ok) throw new Error("Error procesando el pago");
 
-      const orderData = await response.json();
-      clearCart();
-      navigate("/confirmation", { state: orderData });
-    } catch (err: any) {
-      setError(err.message || "Ocurrió un error procesando el pago.");
+      const data = await response.json();
+      navigate("/confirmation", { state: data });
+    } catch (err) {
       console.error(err);
+      setError("Error procesando el pago");
     } finally {
       setLoading(false);
     }
   };
 
-  if (cart.length === 0) {
-    return (
-      <div className="checkout-container">
-        <h2>No hay productos en tu carrito 😔</h2>
-      </div>
-    );
-  }
-
   return (
     <div className="checkout-container">
-      <h2>Checkout</h2>
-
-      {/* Resumen del carrito */}
-      <div className="cart-summary">
-        <h3>Resumen de compra</h3>
-        {cart.map((item: CartItem) => (
-          <div key={item.product_id} className="cart-item">
-            <img
-              src={item.image_url || "/placeholder.png"}
-              alt={item.name}
-              onError={(e) => ((e.target as HTMLImageElement).src = "/placeholder.png")}
-            />
-            <div>
-              <p>{item.name}</p>
-              <p>Precio: ${item.price.toLocaleString()}</p>
-              <p>Cantidad: {item.quantity}</p>
-              <p>Subtotal: ${item.subtotal?.toLocaleString()}</p>
-            </div>
-          </div>
-        ))}
-        <h3>Total: ${total.toLocaleString()}</h3>
-      </div>
-
-      {/* Formulario de tarjeta */}
+      <h2>Pago</h2>
       <div className="payment-form">
         <h3>Datos de la tarjeta</h3>
-        {error && <p className="error">{error}</p>}
-        <form>
-          <input
-            type="text"
-            name="name"
-            value={cardData.name}
-            onChange={handleInputChange}
-            placeholder="Nombre en la tarjeta"
-          />
+        <form onSubmit={(e) => { e.preventDefault(); handleConfirmPurchase(); }}>
           <input
             type="text"
             name="number"
+            placeholder="Número de tarjeta"
             value={cardData.number}
             onChange={handleInputChange}
-            placeholder="Número de tarjeta"
+            required
           />
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <input
-              type="text"
-              name="expiry"
-              value={cardData.expiry}
-              onChange={handleInputChange}
-              placeholder="MM/AA"
-            />
-            <input
-              type="text"
-              name="cvv"
-              value={cardData.cvv}
-              onChange={handleInputChange}
-              placeholder="CVV"
-            />
-          </div>
-          <button type="button" onClick={handleConfirmPurchase} disabled={loading}>
-            {loading ? "Procesando..." : "Confirmar compra"}
+          <input
+            type="text"
+            name="name"
+            placeholder="Nombre del titular"
+            value={cardData.name}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="expiry"
+            placeholder="MM/AA"
+            value={cardData.expiry}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="cvv"
+            placeholder="CVV"
+            value={cardData.cvv}
+            onChange={handleInputChange}
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? "Procesando..." : "Confirmar pago"}
           </button>
         </form>
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   );
